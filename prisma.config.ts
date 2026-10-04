@@ -1,7 +1,9 @@
+import { existsSync } from "node:fs";
 import { defineConfig, env } from "prisma/config";
 
 // Prisma CLI does not load env files itself; Next.js reads .env.local at runtime.
-process.loadEnvFile(".env.local");
+// On Vercel there is no .env.local — variables come from the project settings via process.env.
+if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
