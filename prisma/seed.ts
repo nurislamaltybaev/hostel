@@ -3,7 +3,19 @@ import type { Prisma } from "../src/generated/prisma/client";
 import { hashPassword, verifyPassword } from "../src/lib/password";
 import { prisma } from "../src/lib/prisma";
 
-const dormAmenities = ["Wi-Fi", "Собственный душ", "Собственный туалет", "Кондиционер", "Холодильник"];
+// Amenities follow the hostel's Booking.com profile.
+const dormAmenities = [
+  "Wi-Fi",
+  "Собственный душ",
+  "Собственный туалет",
+  "Кондиционер",
+  "Холодильник",
+  "Розетка у кровати",
+  "Шкаф",
+  "Постельное бельё",
+  "Тапочки",
+];
+const privateAmenities = ["Wi-Fi", "Кондиционер", "Письменный стол", "Постельное бельё", "Тапочки"];
 
 const rooms: Prisma.RoomCreateInput[] = [
   {
@@ -33,7 +45,7 @@ const rooms: Prisma.RoomCreateInput[] = [
     totalBeds: 2,
     pricePerNight: 22000,
     images: ["/images/rooms/private-double-1.jpg", "/images/rooms/private-double-2.jpg"],
-    amenities: ["Wi-Fi", "1 двуспальная кровать"],
+    amenities: ["1 двуспальная кровать", ...privateAmenities],
   },
   {
     title: "Двухместный номер Twin",
@@ -42,7 +54,7 @@ const rooms: Prisma.RoomCreateInput[] = [
     totalBeds: 2,
     pricePerNight: 22000,
     images: ["/images/rooms/private-twin-1.jpg", "/images/rooms/private-twin-2.jpg"],
-    amenities: ["Wi-Fi", "2 отдельные кровати"],
+    amenities: ["2 отдельные кровати", ...privateAmenities],
   },
 ];
 

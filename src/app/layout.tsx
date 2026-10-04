@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kazakhstan Hostel — уютный хостел в центре Астаны",
-  description: "Чистые номера, общая кухня, бесплатный Wi-Fi и ресепшн 24/7. Онлайн-бронирование за пару минут.",
+  title: "Kazakhstan Hostel — хостел в Астане, ул. Желтоксан, 22/3",
+  description: "Новый хостел в Астане: душ и туалет в номере, общая кухня, тренажёрный зал, бесплатные Wi-Fi и парковка. Онлайн-бронирование за пару минут.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

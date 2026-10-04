@@ -63,14 +63,15 @@ export function RoomBrowser() {
         />
         <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-6 sm:pb-24 sm:pt-20">
           <p className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-amber-700 shadow-sm">
-            <MapPin className="size-4" aria-hidden />В самом центре города
+            <MapPin className="size-4" aria-hidden />
+            Астана, ул. Желтоксан, 22/3
           </p>
           <h1 className="mt-5 max-w-2xl text-4xl font-extrabold tracking-tight text-stone-900 sm:text-6xl">
-            Твой уютный дом в центре города
+            Твой уютный дом в Астане
           </h1>
           <p className="mt-4 max-w-xl text-lg text-stone-600">
-            Чистые номера, тёплая атмосфера и новые друзья со всего мира. Бронируй место за пару
-            минут — без предоплаты.
+            Новый хостел со свежим ремонтом: душ и туалет прямо в номере, большая кухня, тренажёрный
+            зал и бесплатная парковка. Оценка гостей на Booking.com — 9,4.
           </p>
 
           <form
