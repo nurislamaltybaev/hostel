@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Уют Хостел — уютный хостел в центре города",
+  title: "Kazakhstan Hostel — уютный хостел в центре Астаны",
   description: "Чистые номера, общая кухня, бесплатный Wi-Fi и ресепшн 24/7. Онлайн-бронирование за пару минут.",
 };
 

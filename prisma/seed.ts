@@ -1,57 +1,78 @@
 import assert from "node:assert";
+import type { Prisma } from "../src/generated/prisma/client";
 import { hashPassword, verifyPassword } from "../src/lib/password";
 import { prisma } from "../src/lib/prisma";
 
-const rooms = [
+const dormAmenities = ["Wi-Fi", "Собственный душ", "Собственный туалет", "Кондиционер", "Холодильник"];
+
+const rooms: Prisma.RoomCreateInput[] = [
   {
-    title: "6-местный мужской номер",
+    title: "4-местный мужской номер",
     description:
-      "Просторный общий номер для мужчин с двухъярусными кроватями, индивидуальными шторками, розетками и лампами у каждого места. Общая ванная на этаже.",
+      "Общий номер для мужчин на четыре спальных места. В номере собственный душ и туалет, кондиционер и холодильник.",
     category: "DORM_MALE",
-    totalBeds: 6,
-    pricePerNight: 6000,
-    images: ["/images/rooms/dorm-male-6-1.jpg", "/images/rooms/dorm-male-6-2.jpg"],
-    amenities: ["Wi-Fi", "Кондиционер", "Индивидуальный шкафчик", "Розетка у кровати", "Постельное бельё"],
+    totalBeds: 4,
+    pricePerNight: 7500,
+    images: ["/images/rooms/dorm-male-4-1.jpg", "/images/rooms/dorm-male-4-2.jpg"],
+    amenities: dormAmenities,
   },
   {
     title: "4-местный женский номер",
     description:
-      "Уютный номер только для девушек: четыре спальных места, собственная ванная комната с феном и большое зеркало.",
+      "Общий номер только для девушек на четыре спальных места. В номере собственный душ и туалет, кондиционер и холодильник.",
     category: "DORM_FEMALE",
     totalBeds: 4,
     pricePerNight: 7500,
     images: ["/images/rooms/dorm-female-4-1.jpg", "/images/rooms/dorm-female-4-2.jpg"],
-    amenities: ["Wi-Fi", "Кондиционер", "Собственная ванная", "Фен", "Индивидуальный шкафчик", "Постельное бельё"],
+    amenities: dormAmenities,
   },
   {
-    title: "8-местный общий номер",
-    description:
-      "Самый бюджетный вариант для компаний и путешественников-одиночек. Смешанный номер с двухъярусными кроватями и общей зоной отдыха рядом.",
-    category: "DORM_MIXED",
-    totalBeds: 8,
-    pricePerNight: 5000,
-    images: ["/images/rooms/dorm-mixed-8-1.jpg"],
-    amenities: ["Wi-Fi", "Индивидуальный шкафчик", "Розетка у кровати", "Постельное бельё"],
-  },
-  {
-    title: "Отдельный Double Люкс",
-    description:
-      "Приватный номер с двуспальной кроватью, собственной ванной, рабочим столом и видом на город. Подходит для пар.",
+    title: "Двухместный номер Double",
+    description: "Отдельный номер на двоих с одной двуспальной кроватью. Подходит для пар.",
     category: "PRIVATE",
     totalBeds: 2,
     pricePerNight: 22000,
     images: ["/images/rooms/private-double-1.jpg", "/images/rooms/private-double-2.jpg"],
-    amenities: ["Wi-Fi", "Кондиционер", "Собственная ванная", "Телевизор", "Чайник", "Полотенца", "Рабочий стол"],
+    amenities: ["Wi-Fi", "1 двуспальная кровать"],
   },
-] as const;
+  {
+    title: "Двухместный номер Twin",
+    description: "Отдельный номер на двоих с двумя раздельными кроватями. Подходит для друзей и коллег.",
+    category: "PRIVATE",
+    totalBeds: 2,
+    pricePerNight: 22000,
+    images: ["/images/rooms/private-twin-1.jpg", "/images/rooms/private-twin-2.jpg"],
+    amenities: ["Wi-Fi", "2 отдельные кровати"],
+  },
+];
 
 async function main() {
-  // Rooms have no natural unique key, so seed them only into an empty table.
-  if ((await prisma.room.count()) === 0) {
-    for (const room of rooms) {
-      await prisma.room.create({
-        data: { ...room, images: [...room.images], amenities: [...room.amenities] },
+  // Rooms are matched by title, so re-running the seed updates them in place.
+  for (const room of rooms) {
+    const existing = await prisma.room.findFirst({ where: { title: room.title } });
+    if (existing) {
+      // Price and availability are managed in the admin panel — don't overwrite them.
+      await prisma.room.update({
+        where: { id: existing.id },
+        data: { ...room, pricePerNight: undefined },
       });
+    } else {
+      await prisma.room.create({ data: room });
+    }
+  }
+
+  // Rooms removed from the list: delete if never booked, otherwise only hide (bookings reference them).
+  const stale = await prisma.room.findMany({
+    where: { title: { notIn: rooms.map((r) => r.title) } },
+    include: { _count: { select: { bookings: true } } },
+  });
+  for (const room of stale) {
+    if (room._count.bookings > 0) {
+      await prisma.room.update({ where: { id: room.id }, data: { isAvailable: false } });
+      console.log(`Hidden (has bookings): ${room.title}`);
+    } else {
+      await prisma.room.delete({ where: { id: room.id } });
+      console.log(`Deleted: ${room.title}`);
     }
   }
 

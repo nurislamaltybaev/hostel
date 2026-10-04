@@ -16,12 +16,18 @@ import { RoomBrowser } from "@/components/RoomBrowser";
 
 // TODO: placeholder contact details — replace with the real hostel data.
 const HOSTEL = {
-  name: "Уют Хостел",
-  address: "г. Алматы, пр. Абая, 1",
-  phone: "+7 700 000 00 00",
-  whatsapp: "https://wa.me/77000000000",
-  telegram: "https://t.me/your_hostel",
+  name: "Kazakhstan Hostel",
+  city: "г. Астана",
+  address: "ул. Желтоксан, 22/3",
+  phone: "+7 (708) 010 19 76", 
+  whatsapp: "https://wa.me/77080101976", 
+  telegram: "https://t.me/kazakhstan_hostel",
+  checkIn: "14:00",
+  checkOut: "12:00",
+  mapIframeUrl:
+    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2503.5!2d71.417!3d51.168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTHCsDEwJzA0LjgiTiA3McKwMjUnMDEuMiJF!5e0!3m2!1sru!2skz!4v1",
 };
+const FULL_ADDRESS = `${HOSTEL.city}, ${HOSTEL.address}`;
 
 const FEATURES: { icon: LucideIcon; title: string; text: string }[] = [
   { icon: Wifi, title: "Бесплатный Wi-Fi", text: "Быстрый интернет во всех номерах и зонах отдыха" },
@@ -84,18 +90,18 @@ export default function Home() {
             <div className="space-y-5 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-stone-200/70">
               <p className="flex items-start gap-3 text-stone-700">
                 <MapPin className="mt-0.5 size-5 shrink-0 text-amber-600" aria-hidden />
-                {HOSTEL.address}
+                {FULL_ADDRESS}
               </p>
               <a
-                href={`tel:${HOSTEL.phone.replace(/\s/g, "")}`}
+                href={`tel:${HOSTEL.phone.replace(/[^\d+]/g, "")}`}
                 className="flex items-center gap-3 text-stone-700 hover:text-amber-600"
               >
                 <Phone className="size-5 shrink-0 text-amber-600" aria-hidden />
                 {HOSTEL.phone}
               </a>
-              <p className="flex items-center gap-3 text-stone-700">
-                <Clock className="size-5 shrink-0 text-amber-600" aria-hidden />
-                Круглосуточно, без выходных
+              <p className="flex items-start gap-3 text-stone-700">
+                <Clock className="mt-0.5 size-5 shrink-0 text-amber-600" aria-hidden />
+                Заезд с {HOSTEL.checkIn}, выезд до {HOSTEL.checkOut} · ресепшн круглосуточно
               </p>
               <div className="flex flex-col gap-3 pt-2 sm:flex-row">
                 <a
@@ -120,7 +126,7 @@ export default function Home() {
             </div>
             <iframe
               title="Хостел на карте"
-              src={`https://www.google.com/maps?q=${encodeURIComponent(HOSTEL.address)}&output=embed`}
+              src={HOSTEL.mapIframeUrl}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="h-72 w-full rounded-3xl border-0 shadow-sm ring-1 ring-stone-200/70 lg:h-full"
@@ -134,7 +140,7 @@ export default function Home() {
           <p>
             © {new Date().getFullYear()} {HOSTEL.name}
           </p>
-          <p>{HOSTEL.address}</p>
+          <p>{FULL_ADDRESS}</p>
         </div>
       </footer>
     </>
