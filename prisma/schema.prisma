@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum RoomCategory {
+  DORM_MALE
+  DORM_FEMALE
+  DORM_MIXED
+  PRIVATE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Room {
+  id            String       @id @default(uuid())
+  title         String
+  description   String
+  category      RoomCategory
+  totalBeds     Int
+  pricePerNight Float
+  images        Json // string[] of photo URLs
+  amenities     Json // string[]: "Wi-Fi", "Кондиционер", ...
+  isAvailable   Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  bookings      Booking[]
+}
+
+model Booking {
+  id           String        @id @default(uuid())
+  roomId       String
+  room         Room          @relation(fields: [roomId], references: [id])
+  guestName    String
+  guestEmail   String
+  guestPhone   String
+  checkInDate  DateTime
+  checkOutDate DateTime
+  guestsCount  Int
+  totalPrice   Float
+  status       BookingStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([roomId])
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
