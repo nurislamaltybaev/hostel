@@ -16,6 +16,8 @@ export async function POST(request: Request) {
   try {
     // Availability check and insert share one transaction so two requests can't take the same beds.
     const result = await prisma.$transaction(async (tx) => {
+      // Row lock: concurrent bookings of the same room queue up here, so they can't both pass the check below.
+      await tx.$queryRaw`SELECT id FROM "Room" WHERE id = ${data.roomId} FOR UPDATE`;
       const room = await tx.room.findUnique({ where: { id: data.roomId } });
       if (!room || !room.isAvailable) {
         return { status: 404, error: "Комната не найдена или недоступна" } as const;

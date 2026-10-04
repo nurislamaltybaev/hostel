@@ -10,6 +10,7 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: env("DATABASE_URL"),
+    // Migrations need a direct (non-pgbouncer) connection; on Supabase set DIRECT_URL for that.
+    url: process.env.DIRECT_URL ?? env("DATABASE_URL"),
   },
 });

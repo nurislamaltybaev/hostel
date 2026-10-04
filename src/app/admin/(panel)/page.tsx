@@ -43,21 +43,11 @@ export default async function AdminBookingsPage({
   const q = (typeof sp.q === "string" ? sp.q : "").trim().slice(0, 100);
   const page = Math.max(1, Number(sp.page) || 1);
 
-  // ponytail: SQLite LIKE ignores case only for ASCII, so common casings are tried for Cyrillic
-  // names. Add a normalized lowercase column if staff need fully case-insensitive search.
-  const nameVariants = [
-    ...new Set([
-      q,
-      q.toLowerCase(),
-      q.toUpperCase(),
-      q.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase()),
-    ]),
-  ];
   const where: Prisma.BookingWhereInput = {
     status,
     ...(q && {
       OR: [
-        ...nameVariants.map((v) => ({ guestName: { contains: v } })),
+        { guestName: { contains: q, mode: "insensitive" } },
         { id: { startsWith: q.replace(/^#/, "").toLowerCase() } },
       ],
     }),
